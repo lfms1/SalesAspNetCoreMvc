@@ -58,7 +58,7 @@ namespace SalesWebMvc.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Delete(int? id) 
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
@@ -78,13 +78,20 @@ namespace SalesWebMvc.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            await _sellerService.RemoveAsync(id);
+            try
+            {
+                await _sellerService.RemoveAsync(id);
+                return RedirectToAction("Index");
+            }
+            catch (IntegrityException e)
+            {
 
-            return RedirectToAction("Index");
+                return RedirectToAction(nameof(Error), new { message = e.Message});
+            }
         }
 
         [HttpGet]
-        public async Task<IActionResult> Details(int? id) 
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
@@ -101,7 +108,7 @@ namespace SalesWebMvc.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Edit(int? id) 
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
@@ -120,13 +127,13 @@ namespace SalesWebMvc.Controllers
                 Departments = departments,
                 Seller = obj
             };
-            
+
             return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Seller seller) 
+        public async Task<IActionResult> Edit(int id, Seller seller)
         {
             if (!ModelState.IsValid)
             {
@@ -151,7 +158,7 @@ namespace SalesWebMvc.Controllers
             catch (ApplicationException e)
             {
                 return RedirectToAction(nameof(Error), new { message = e.Message });
-            }   
+            }
         }
 
         public IActionResult Error(string message)
